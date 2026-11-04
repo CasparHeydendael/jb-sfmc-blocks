@@ -150,10 +150,11 @@ function textStyle({ family, size, lh, align = 'left', weight, italic = false, e
     + `color:${color.text};${align !== 'left' ? `text-align:${align};` : ''}${extra}`;
 }
 
+// Mark OT Medium, uppercase (Figma). Arial renders weight 500 as regular.
 export function headline({ text, size = 'M', align = 'left', bold = false, italic = false, level = 1 }) {
   const t = type.headline[size];
-  const style = textStyle({ family: font.serif, size: t.size, lh: t.lh, align, weight: bold ? 700 : 400, italic });
-  return `<h${level} class="jb-serif jb-text jb-headline-${size}" style="${style}">${richText(text)}</h${level}>`;
+  const style = textStyle({ family: font.sans, size: t.size, lh: t.lh, align, weight: bold ? 700 : 500, italic, extra: 'text-transform:uppercase;' });
+  return `<h${level} class="jb-sans jb-text jb-headline-${size}" style="${style}">${richText(text)}</h${level}>`;
 }
 
 // variant 'serif' for straplines and quotes, 'eyebrow' for uppercase sans labels
@@ -181,8 +182,10 @@ export function bodyText({ html, align = 'left' }) {
 // ---------------------------------------------------------------------------
 // Buttons
 
-const labelStyle = `font-family:${font.sans};font-size:${type.label.size}px;line-height:${type.label.lh}px;`
-  + `letter-spacing:${type.label.tracking}px;text-transform:uppercase;font-weight:700;text-decoration:none;`;
+const labelStyle = `font-family:${font.sans};font-size:${type.cta.size}px;line-height:${type.cta.lh}px;`
+  + `letter-spacing:${type.cta.tracking}px;text-transform:uppercase;font-weight:500;text-decoration:none;`;
+// Small CTA (product list price buttons) keeps the 12px label size
+const labelStyleSmall = labelStyle.replace(`font-size:${type.cta.size}px;line-height:${type.cta.lh}px;`, `font-size:${type.label.size}px;line-height:${type.label.lh}px;`);
 
 function aliasAttr(alias) {
   return alias ? ` alias="${escapeAttr(alias)}"` : '';
@@ -211,6 +214,7 @@ export function button({ label, href, variant = 'primary', width = 'full', align
   }
 
   const { border } = tokens.button;
+  const ls = size === 'small' ? labelStyleSmall : labelStyle;
   const padY = size === 'small' ? 6 : tokens.button.padY;
   const padX = size === 'small' ? 12 : tokens.button.padX;
   const primary = variant === 'primary';
@@ -221,14 +225,14 @@ export function button({ label, href, variant = 'primary', width = 'full', align
   if (width === 'full') {
     return `<table ${TABLE} width="100%"><tr>`
       + `<td class="${cls}" align="${align}"${primary ? ` bgcolor="${color.ink}"` : ''} style="${fill}border:${border}px solid ${color.ink};mso-padding-alt:${padY}px ${padX}px;">`
-      + `<a href="${escapeAttr(url)}"${a} class="jb-sans ${cls}-label" style="${labelStyle}display:block;padding:${padY}px ${padX}px;color:${fg};text-align:${align};">${text}</a>`
+      + `<a href="${escapeAttr(url)}"${a} class="jb-sans ${cls}-label" style="${ls}display:block;padding:${padY}px ${padX}px;color:${fg};text-align:${align};">${text}</a>`
       + '</td></tr></table>';
   }
 
   // Auto width: padded inline-block link. The MSO-only <i> spacers recreate the padding
   // in classic Outlook, which ignores padding on <a>.
-  const msoWidth = Math.round((padX / type.label.size) * 100);
-  return alignRow(align, `<a href="${escapeAttr(url)}"${a} class="jb-sans ${cls} ${cls}-label" style="${labelStyle}${fill}border:${border}px solid ${color.ink};`
+  const msoWidth = Math.round((padX / (size === 'small' ? type.label.size : type.cta.size)) * 100);
+  return alignRow(align, `<a href="${escapeAttr(url)}"${a} class="jb-sans ${cls} ${cls}-label" style="${ls}${fill}border:${border}px solid ${color.ink};`
     + `display:inline-block;padding:${padY}px ${padX}px;color:${fg};mso-padding-alt:0;text-underline-color:${primary ? color.ink : color.page};">`
     + `<!--[if mso]><i style="mso-font-width:${msoWidth}%;mso-text-raise:${padY * 2}pt;" hidden>&emsp;</i><span style="mso-text-raise:${padY}pt;"><![endif]-->`
     + text

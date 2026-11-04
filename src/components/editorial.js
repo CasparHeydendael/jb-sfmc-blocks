@@ -104,7 +104,7 @@ export function serviceLinks(d) {
   const cols = items.map((it, i) => {
     const url = safeUrl(it.href) ? it.href : '#';
     return `<a href="${escapeAttr(url)}" alias="service-${it.key}" style="display:block;text-decoration:none;">`
-      + themedImage({ src: it.src, srcDark: it.srcDark, alt: '', width: 36 })
+      + themedImage({ src: it.src, srcDark: it.srcDark, alt: '', width: 38 })
       + spacer(10)
       + text({ kind: 'label', align: 'center', tag: 'div', html: it.label })
       + '</a>';
