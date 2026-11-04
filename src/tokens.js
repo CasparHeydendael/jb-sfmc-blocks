@@ -68,7 +68,14 @@ const ph = (w, h, text, dark = false) => `https://placehold.co/${w * 2}x${h * 2}
 const icon = (size, name) => ({ src: ph(size, size, name), srcDark: ph(size, size, name, true) });
 
 export const assets = {
-  logo: { src: ph(172, 39, 'Justerini & Brooks'), srcDark: ph(172, 39, 'Justerini & Brooks', true), width: 172, height: 39 },
+  // Wordmark exported from Figma (2× PNG, background keyed to transparent), hosted in Content Builder
+  // (DEPT sandbox, J&B Component Library folder; source files in jb-email/assets/)
+  logo: {
+    src: 'https://image.s10.sfmc-content.com/lib/fe4a15707564047f771470/m/1/865b49ba-5882-44d0-a4ea-5b2de6a958ba.png',
+    srcDark: 'https://image.s10.sfmc-content.com/lib/fe4a15707564047f771470/m/1/0efbb65f-6186-4ee7-9655-2594520d31bd.png',
+    width: 172,
+    height: 39,
+  },
   monogram: { src: ph(40, 37, 'JB'), srcDark: ph(40, 37, 'JB', true), width: 40, height: 37 }, // "N'61" mark, pending J&B decision
   social: {
     instagram: { ...icon(16, 'IG'), href: 'https://www.instagram.com/justerinis/', alt: 'Instagram' },
