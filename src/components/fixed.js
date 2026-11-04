@@ -39,7 +39,7 @@ export function footer(d = {}) {
   const socials = (d.social ?? ['instagram', 'facebook', 'youtube', 'web'])
     .map((k) => assets.social[k])
     .filter(Boolean)
-    .map((s, i) => `<td width="16" style="padding:0 ${i ? 16 : 0}px 0 0;">${themedImage({ ...s, width: 16, href: s.href, alias: `social-${i + 1}` })}</td>`)
+    .map((s, i) => `<td width="16" style="padding:0 0 0 ${i ? 16 : 0}px;">${themedImage({ ...s, width: 16, href: s.href, alias: `social-${i + 1}` })}</td>`)
     .join('');
 
   const links = (d.links ?? []).map((l, i) => text({ kind: 'small', align: 'center', raw: true, html: link({ label: l.label, href: l.href, alias: `footer-${i + 1}` }) }));

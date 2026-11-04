@@ -10,9 +10,29 @@ const { color, width } = tokens;
 // Fills the inbox preview after the preheader so body copy doesn't leak in
 const previewFiller = '&#847;&zwnj;&nbsp;'.repeat(50);
 
+// In 'sfmc' mode a region is an empty Content Builder slot; its default content travels in the
+// asset's `slots` object (see sfmcTemplateAsset).
 function region(mode, key, label, html) {
   if (mode !== 'sfmc') return html;
-  return `<div data-type="slot" data-key="${key}" data-label="${label}">${html}</div>`;
+  return `<div data-type="slot" data-key="${key}" data-label="${label}"></div>`;
+}
+
+// Content Builder template asset (POST /asset/v1/content/assets). Header and footer arrive as
+// default HTML blocks; the footer slot is locked so legal and unsubscribe content can't be removed.
+export function sfmcTemplateAsset({ name, categoryId, header, footer }) {
+  const slot = (key, html, locked) => ({
+    content: html ? `<div data-type="block" data-key="${key}-default"></div>` : '',
+    design: '<p style="font-family:Arial;color:#999;font-size:12px;text-align:center;padding:24px;margin:0;border:1px dashed #ccc;">Drop J&amp;B blocks here</p>',
+    locked,
+    blocks: html ? { [`${key}-default`]: { assetType: { id: 197, name: 'htmlblock' }, content: html } } : {},
+  });
+  return {
+    name,
+    assetType: { id: 4, name: 'template' },
+    category: { id: categoryId },
+    content: renderShell({ mode: 'sfmc' }),
+    slots: { header: slot('header', header, false), body: slot('body', '', false), footer: slot('footer', footer, true) },
+  };
 }
 
 export function renderShell({ mode = 'static', title = 'Justerini & Brooks', preheader = '', lang = 'en', header = '', body = '', footer = '' }) {
@@ -37,7 +57,7 @@ export function renderShell({ mode = 'static', title = 'Justerini & Brooks', pre
 ${styles}
 </head>
 <body class="jb-body" style="margin:0;padding:0;width:100%;background-color:${color.page};">
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;" aria-hidden="true">${pre}${previewFiller}</div>
+${mode === 'sfmc' ? '<custom name="opencounter" type="tracking"/>\n' : ''}<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;" aria-hidden="true">${pre}${previewFiller}</div>
 <div role="article" aria-roledescription="email" aria-label="${escapeText(title)}" lang="${lang}" dir="ltr" class="jb-bg" style="background-color:${color.page};">
 <!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" width="${width}" align="center"><tr><td><![endif]-->
 <div class="jb-container" style="max-width:${width}px;margin:0 auto;">

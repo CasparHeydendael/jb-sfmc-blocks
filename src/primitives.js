@@ -94,9 +94,11 @@ export function columns({ cols, ratios, gutter = tokens.gutter.desktop, gap = 20
   const n = perRow ?? cols.length;
   const rowRatios = ratios ?? Array(n).fill(1);
   const { outer, widths: rowWidths } = columnWidths({ count: n, ratios: rowRatios, gutter, gap, width });
-  if (width) gutter = gap / 2; // nested: no outer gutter
   const widths = cols.map((_, i) => rowWidths[i % n]);
-  const half = gap / 2;
+  // Split the gap into whole pixels (e.g. 15 → 7 + 8): classic Outlook rounds half pixels,
+  // which can push the last column onto a new line.
+  const padL = Math.floor(gap / 2);
+  const padR = gap - padL;
   const keep = mobile === 2 || mobile === 3;
   const colClass = keep ? `jb-col jb-col-m${mobile}` : 'jb-col';
   const dir = reverse ? ' dir="rtl"' : '';
@@ -108,16 +110,18 @@ export function columns({ cols, ratios, gutter = tokens.gutter.desktop, gap = 20
     const pb = i < lastRowStart ? rowGap : 0;
     const newRow = i > 0 && i % n === 0 ? '<!--[if mso]></tr><tr><![endif]-->' : '';
     return newRow
-      + `<!--[if mso]><td width="${widths[i]}" valign="${valign}"${innerDir} style="padding:0 ${half}px ${pb}px ${half}px;"><![endif]-->`
+      + `<!--[if mso]><td width="${widths[i]}" valign="${valign}"${innerDir} style="padding:0 ${padR}px ${pb}px ${padL}px;"><![endif]-->`
       + `<div class="${colClass}${last}"${innerDir} style="display:inline-block;width:100%;max-width:${widths[i]}px;vertical-align:${valign};">`
-      + `<div class="jb-col-pad" style="padding:0 ${half}px ${pb}px ${half}px;">${html}</div>`
+      + `<div class="jb-col-pad" style="padding:0 ${padR}px ${pb}px ${padL}px;">${html}</div>`
       + '</div><!--[if mso]></td><![endif]-->';
   });
 
-  const g = gutter - half;
+  // Outer padding tops up each edge column's inner padding to the gutter (nested rows: none)
+  const gL = width ? 0 : gutter - padL;
+  const gR = width ? 0 : gutter - padR;
   const bgAttrs = bg ? ` bgcolor="${bg}" style="background-color:${bg};"` : '';
   return `<table ${TABLE} width="100%"${bgAttrs}><tr>`
-    + `<td class="${width ? 'jb-cols-nested' : keep ? 'jb-px-cols-keep' : 'jb-px-cols'}"${dir} style="padding:${padTop}px ${g}px ${padBottom}px ${g}px;font-size:0;line-height:0;text-align:left;">`
+    + `<td class="${width ? 'jb-cols-nested' : keep ? 'jb-px-cols-keep' : 'jb-px-cols'}"${dir} style="padding:${padTop}px ${gR}px ${padBottom}px ${gL}px;font-size:0;line-height:0;text-align:left;">`
     + `<!--[if mso]><table ${TABLE} width="${outer}"${dir}><tr><![endif]-->`
     + cells.join('')
     + '<!--[if mso]></tr></table><![endif]-->'
