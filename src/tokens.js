@@ -62,28 +62,28 @@ export const tokens = {
   stackGap: 24, // vertical gap between stacked columns on mobile
 };
 
-// Brand assets. Placeholders until J&B supplies files; production URLs must be absolute https
-// (e.g. Content Builder image URLs). Each needs a light and a dark-mode version, exported at 2x.
+// Brand assets. Production URLs must be absolute https (Content Builder image URLs), with a light
+// and a dark-mode file each, exported at 2x. Real assets come from the Figma components library
+// (exported at 2x, backgrounds keyed to transparent; sources in jb-email/assets/) and are hosted in
+// Content Builder (DEPT sandbox, J&B Component Library folder). Remaining placeholders are marked.
 const ph = (w, h, text, dark = false) => `https://placehold.co/${w * 2}x${h * 2}/${dark ? '121212/F2F2F2' : 'FFFFFF/1A1A1A'}/png?text=${encodeURIComponent(text)}`;
 const icon = (size, name) => ({ src: ph(size, size, name), srcDark: ph(size, size, name, true) });
+const cb = (id) => `https://image.s10.sfmc-content.com/lib/fe4a15707564047f771470/m/1/${id}.png`;
+const pair = (light, dark) => ({ src: cb(light), srcDark: cb(dark) });
 
 export const assets = {
-  // Wordmark exported from Figma (2× PNG, background keyed to transparent), hosted in Content Builder
-  // (DEPT sandbox, J&B Component Library folder; source files in jb-email/assets/)
-  logo: {
-    src: 'https://image.s10.sfmc-content.com/lib/fe4a15707564047f771470/m/1/865b49ba-5882-44d0-a4ea-5b2de6a958ba.png',
-    srcDark: 'https://image.s10.sfmc-content.com/lib/fe4a15707564047f771470/m/1/0efbb65f-6186-4ee7-9655-2594520d31bd.png',
-    width: 172,
-    height: 39,
-  },
-  monogram: { src: ph(40, 37, 'JB'), srcDark: ph(40, 37, 'JB', true), width: 40, height: 37 }, // "N'61" mark, pending J&B decision
+  logo: { ...pair('865b49ba-5882-44d0-a4ea-5b2de6a958ba', '0efbb65f-6186-4ee7-9655-2594520d31bd'), width: 172, height: 39 },
+  // Placeholder: Figma notes J&B still to supply the "N'61" mark
+  monogram: { src: ph(40, 37, 'JB'), srcDark: ph(40, 37, 'JB', true), width: 40, height: 37 },
+  arrow: { ...pair('a114296d-a17b-4a02-93c4-a6974797d4b3', 'b24ff34d-6c64-4c50-b084-3509a8e125f9'), width: 16, height: 16 },
   social: {
-    instagram: { ...icon(16, 'IG'), href: 'https://www.instagram.com/justerinis/', alt: 'Instagram' },
-    facebook: { ...icon(16, 'FB'), href: 'https://www.facebook.com/justerinis/', alt: 'Facebook' },
-    youtube: { ...icon(16, 'YT'), href: 'https://www.youtube.com/', alt: 'YouTube' },
-    web: { ...icon(16, 'WWW'), href: 'https://www.justerinis.com/', alt: 'justerinis.com' },
+    instagram: { ...pair('a1985272-d3fc-4278-83c3-224911dd8a81', '6760b5b5-39fe-488f-a1c6-451d493a8a4c'), href: 'https://www.instagram.com/justerinis/', alt: 'Instagram' },
+    facebook: { ...pair('e29c28d6-9cb9-4d23-8147-34a91831db9f', 'b67c9c5a-2684-4948-b8c5-2796bd7bb943'), href: 'https://www.facebook.com/justerinis/', alt: 'Facebook' },
+    youtube: { ...pair('09ac00ba-5954-482c-92e5-3477f9fe9263', '0fa86928-f6e9-4b75-91a5-ddf6e19d35e2'), href: 'https://www.youtube.com/', alt: 'YouTube' },
+    web: { ...pair('d704efae-4a17-4790-94ba-3bb62dd4dc82', 'd62fdf54-1673-484d-9bc3-70975ca65cf6'), href: 'https://www.justerinis.com/', alt: 'justerinis.com' },
   },
-  // L9.2 service icons (labels from Figma, which differ from the PDF list)
+  // L9.2 service icons (labels from Figma, which differ from the PDF list).
+  // Placeholders: Figma export blocked by the Collab seat limit; layers 321:42 (light) / 325:234 (dark)
   service: {
     store: { ...icon(36, 'Store'), label: 'Store with us' },
     sell: { ...icon(36, 'Sell'), label: 'Sell with us' },
@@ -92,10 +92,14 @@ export const assets = {
     events: { ...icon(36, 'Events'), label: 'Our events' },
     service: { ...icon(36, 'Help'), label: 'Customer service' },
   },
-  // L9.1 event detail icons
+  // L9.1 event detail icons (dark versions recoloured from the light export)
   event: {
-    date: icon(20, 'D'), time: icon(20, 'T'), location: icon(20, 'L'),
-    availability: icon(20, 'A'), format: icon(20, 'F'), price: icon(20, '£'),
+    date: pair('ad862810-7e16-4d7e-b097-9407638bc114', 'd54d8d4b-1aa0-4d73-9571-f97d5d4e41ad'),
+    time: pair('378a2fb9-8169-46b0-9643-cc7fed1d0eed', 'ca93ff07-0b20-4b68-84a1-17bdc13772f5'),
+    location: pair('43e3aeee-fea7-4bf3-9e08-1a01735f14be', '52bcbddf-59e3-4e4d-ae90-a708bd3ffd8c'),
+    availability: pair('b0959a3f-4d80-4447-bdaa-d598c741eb62', '0ed59948-178a-4651-b2a8-673838042c00'),
+    format: pair('b7009b5a-86ce-426b-8853-90e6fea9baa3', '496e5764-2af9-488f-b3a8-92254253d377'),
+    price: pair('36680137-2ae2-4ee4-b475-d5a19a1786f2', '0860eba7-1a74-4169-a6e8-559ebf46ff59'),
   },
 };
 

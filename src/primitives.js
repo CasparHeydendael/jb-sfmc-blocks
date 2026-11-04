@@ -1,7 +1,7 @@
 // Shared building blocks. Every function is pure (data in, HTML string out) so the same
 // code runs in the Node build and inside the Content Builder custom blocks.
 
-import { tokens, contentWidth } from './tokens.js';
+import { tokens, contentWidth, assets } from './tokens.js';
 
 const { color, font, type } = tokens;
 // border="0" is the default, so it's left out to save weight
@@ -201,9 +201,13 @@ export function button({ label, href, variant = 'primary', width = 'full', align
   const text = escapeText(label);
   const a = aliasAttr(alias);
 
+  // Arrow + text: Figma's 16px arrow icon, 11px gap, label. Both parts link to the same URL.
   if (variant === 'arrow') {
-    return alignRow(align, `<a href="${escapeAttr(url)}"${a} class="jb-sans jb-link" style="${labelStyle}color:${color.ink};display:inline-block;">`
-      + `<span aria-hidden="true">&rarr;&nbsp;&nbsp;</span>${text}</a>`);
+    const icon = themedImage({ ...assets.arrow, alt: '', align: 'left', href: url, alias: alias && `${alias}-arrow` });
+    return alignRow(align, `<table ${TABLE} align="${align === 'center' ? 'center' : 'left'}"><tr>`
+      + `<td width="${assets.arrow.width}" valign="middle" style="width:${assets.arrow.width}px;padding-right:11px;">${icon}</td>`
+      + `<td valign="middle"><a href="${escapeAttr(url)}"${a} class="jb-sans jb-link" style="${labelStyle}color:${color.ink};">${text}</a></td>`
+      + '</tr></table>');
   }
 
   const { border } = tokens.button;
